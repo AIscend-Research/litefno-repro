@@ -8,17 +8,17 @@ authors:
   - name: Jacob Goldstein
     orcid: 0009-0004-2659-1256
     email:
-    affiliations: 1,5,*
+    affiliations: 1
 
   - name: Kristen Zhou
     orcid: 0009-0003-8583-4919
     email:
-    affiliations: 2,5
+    affiliations: 2
 
   - name: Wenhao Lu
     orcid: 0009-0001-6517-8745
     email:
-    affiliations: 1,5
+    affiliations: 1
 
   - name: David J. Zhang
     orcid: 0009-0003-3037-5890
@@ -34,6 +34,11 @@ authors:
     orcid: 0009-0006-1197-0063
     email:
     affiliations: 4
+
+  - name: Jayvant Rajesh
+    orcid: 0009-0001-4232-3065
+    email:
+    affiliations: 5
 
 # Affiliations
 affiliations:
@@ -54,7 +59,8 @@ affiliations:
     address: Seoul, South Korea
 
   - code: 5
-    name: Equal contribution
+    name: Heritage High School
+    address: Brentwood, CA, USA
 
 # Keywords
 keywords:
