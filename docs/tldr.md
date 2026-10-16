@@ -1,18 +1,23 @@
 # TL;DR
 
 ## The paper in simple terms
-- The paper shows how to predict how physical systems change over time (fluids, reaction-diffusion, etc.).
-- It uses a Fourier Neural Operator (FNO), which learns patterns in the frequency domain.
-- LiteFNO makes FNO cheaper by using low-rank approximations, so it runs faster and uses fewer parameters.
-- The goal is to keep accuracy close to the full model while reducing cost.
+
+- The paper proposes a lightweight Fourier Neural Operator for predicting how physical systems change over time.
+- It uses Fourier-domain operations, low-rank factorization, and a transduction stage to reduce computational cost while preserving useful predictive accuracy.
 
 ## This project in simple terms
-- Reproduces the LiteFNO paper results on The Well datasets.
-- Uses configs for download, preprocessing, training, and evaluation so runs are repeatable.
-- Records metrics (RMSE/VRMSE) and notes any deviations or fixes from the paper.
 
-## What we are trying to achieve
-- Match the paper's reported accuracy for both LiteFNO and the FNO-S baseline.
-- Ensure preprocessing and hyperparameters align with the paper and document any differences.
-- Extend the work to low-resource settings (smaller ranks, quantization, robustness tests, explainability).
-- Produce clear, reproducible documentation for every experiment and change.
+This repository is an **in-progress reproduction attempt**. It does **not yet reproduce LiteFNO**.
+
+- The FNO-S spectral baseline is implemented.
+- The class currently named `LiteFNO` is a low-rank CNN placeholder, not the paper's spectral architecture.
+- Metrics and checkpoints associated with that placeholder are not evidence about LiteFNO's performance and cannot establish whether Fourier structure gives an advantage.
+
+See [the reproducibility notes](reproducibility_findings.md) for the exact status and remaining requirements.
+
+## What remains
+
+- Implement LiteFNO's spectral convolution and CP low-rank factorization, and determine how to handle the paper's transduction stage.
+- Re-run experiments with documented, paper-aware settings and compare with the reported results and the FNO-S and CNN baselines.
+- Re-run affected preprocessing experiments after the fixes documented in [notes_deviations.md](notes_deviations.md).
+- Report conclusions only after the implementation and comparisons support them.
