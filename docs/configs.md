@@ -41,9 +41,10 @@ Used by `litefno download` and `litefno preprocess`:
 ## Model config
 
 - `name`: `litefno` or `fno_s`.
+- **Important:** the current `litefno` configuration selects a low-rank CNN placeholder in `src/litefno/models/litefno.py`; it is not the published spectral LiteFNO architecture.
 - `layers`: number of blocks.
 - `width`: hidden width.
-- `rank` (LiteFNO only): low-rank bottleneck size.
+- `rank` (`litefno` placeholder only): low-rank bottleneck size.
 - `modes` (FNO-S only): number of Fourier modes.
 
 ## Training config
