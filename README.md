@@ -1,14 +1,17 @@
 # litefno-repro
 
-A from-scratch reproduction of the Lightweight Fourier Neural Operator (LiteFNO,
-Ahn et al., 2025), plus a parameter-matched low-rank CNN ablation that the
-original paper does not include.
+An in-progress, from-scratch attempt to reproduce the Lightweight Fourier Neural Operator (LiteFNO, Ahn et al., 2025), with an FNO-S baseline and a planned parameter-matched CNN comparison.
 
-Headline result: on Gray-Scott at 32x32 across three seeds, the CNN baseline
-matches or outperforms LiteFNO on one-step VRMSE and on autoregressive rollout,
-so we find no consistent evidence for a Fourier inductive-bias advantage at this
-scale. See [docs/reproducibility_findings.md](docs/reproducibility_findings.md)
-for the full statement of what is and is not reproduced.
+> **Current status: LiteFNO has not yet been reproduced in this repository.** The class named `LiteFNO` in `src/litefno/models/litefno.py` is currently a low-rank CNN placeholder built from `Conv2d` layers. It does not implement the paper's spectral convolution, CP low-rank factorization of spectral weights, or transduction stage. The FNO-S spectral baseline is implemented, but the current metrics and checkpoints associated with the placeholder are **not valid evidence about LiteFNO's performance**. They cannot support a conclusion about whether LiteFNO's Fourier structure provides an advantage.
+
+See [docs/reproducibility_findings.md](docs/reproducibility_findings.md) for the implementation status, limitations, and requirements for a valid comparison.
+
+## Current implementation status
+
+- **FNO-S:** a spectral FNO baseline using FFT operations is implemented.
+- **LiteFNO:** incomplete. The class with this name is a CNN placeholder, not the architecture described in the paper.
+- **Evaluation:** current placeholder metrics must not be presented as LiteFNO results. A faithful architecture and a documented, paper-aware evaluation protocol are needed before drawing conclusions.
+- **Preprocessing:** known discrepancies and fixes are recorded in [docs/notes_deviations.md](docs/notes_deviations.md). The documented fixes still need to be re-evaluated where noted.
 
 ## Repository layout
 
@@ -16,21 +19,15 @@ for the full statement of what is and is not reproduced.
 src/litefno/   Python package (models, training, metrics, data, preprocessing)
 configs/       YAML configs: datasets/ and experiments/
 scripts/       CLI helpers and Kaggle notebook builders (build_*_notebook.py)
-notebooks/     Generated Kaggle notebooks (built by scripts/build_*.py)
-results/       Numeric outputs: seeds/ mechinterp/ extensions/ logs/ checkpoints/
-figures/       Plots: headline/ mechinterp/ extensions/ reproduction/
-data/          Gray-Scott data (raw/ and processed/; not in git, see Zenodo)
+notebooks/     Generated or experimental Kaggle notebooks
+results/       Numeric outputs and experiment logs (interpret with the status caveat above)
+figures/       Experiment figures (interpret with the status caveat above)
+data/          Gray-Scott data (raw/ and processed/; not in git, see archive note below)
 tests/         pytest suite
 docs/          Setup, reproduction guide, and reproducibility notes
 ```
 
-`metadata.yaml` and `bibliography.bib` are submission metadata for the
-accompanying write-up; they are not needed to run the code.
-
-The authoritative seed-robust numbers are in `results/seeds/` (3-seed headline)
-and `results/mechinterp/` (3-seed dead-mode, CP-rank, mode ablation), with
-figures in `figures/headline/` and `figures/mechinterp/`. Checkpoints and data
-are git-ignored and distributed via Zenodo.
+`metadata.yaml` and `bibliography.bib` contain draft submission metadata and references. The metadata now describes the current project status rather than claiming a completed reproduction.
 
 ## Install
 
@@ -41,37 +38,33 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 pip install -e .          # add [dev] for the test dependencies
 ```
 
-Dataset downloads use the official Polymathic `the_well` package, which provides
-the `the-well-download` CLI:
+Dataset downloads use the official Polymathic `the_well` package, which provides the `the-well-download` CLI:
 
 ```bash
 pip install the_well
 the-well-download --help   # verify it is on your PATH
 ```
 
-The downloader pulls from HuggingFace; if a dataset is gated, run
-`huggingface-cli login` once before `litefno download`.
+The downloader pulls from HuggingFace; if a dataset is gated, authenticate with HuggingFace before downloading.
 
-## Fast path: data and checkpoints from Zenodo
+## Data archive
 
-Preprocessed Gray-Scott data and trained checkpoints (matched CNN plus 3-seed
-CP-factorized spectral LiteFNO) are archived on Zenodo under CC BY 4.0:
+A project archive is available on Zenodo: [10.5281/zenodo.20718092](https://doi.org/10.5281/zenodo.20718092).
 
-**DOI: [10.5281/zenodo.20718092](https://doi.org/10.5281/zenodo.20718092)**
+**Checkpoint caveat:** the current reproducibility notes do not validate the archived checkpoints as faithful LiteFNO checkpoints. The repository's current logs/checkpoints associated with the `LiteFNO` placeholder cannot be used as reproduction results. Read [the reproducibility notes](docs/reproducibility_findings.md) before interpreting any archived metrics or checkpoints.
+
+If you use the archived preprocessed data, the existing bundle layout can be copied as follows:
 
 ```bash
 unzip litefno-repro-data.zip
 cp -R litefno-repro-data/data/processed/* data/processed/
-cp    litefno-repro-data/checkpoints/*.pt results/checkpoints/
 ```
 
-That is enough to run the notebooks and `litefno test` without re-downloading
-the 44 GB raw dataset from The Well.
+This avoids re-downloading the raw dataset from The Well. Do not copy or report archived checkpoints as valid LiteFNO results without independently confirming their provenance and architecture.
 
 ## Slow path: build the data yourself
 
-The project expects The Well datasets as HDF5 with shape
-`(n_traj, n_steps, H, W, fields)`.
+The project expects The Well datasets as HDF5 with shape `(n_traj, n_steps, H, W, fields)`.
 
 ```bash
 litefno download   --config configs/datasets/gray_scott_reaction_diffusion.yaml
@@ -84,6 +77,8 @@ litefno preprocess --config configs/datasets/gray_scott_reaction_diffusion.yaml
 litefno train --config configs/experiments/litefno_gray_scott_reaction_diffusion.yaml
 ```
 
+**Important:** with the current code, this configuration trains the CNN placeholder described above. Its outputs are not LiteFNO reproduction results. Do not use them to claim a Fourier inductive-bias finding.
+
 Override any config value on the CLI:
 
 ```bash
@@ -91,11 +86,9 @@ litefno train --config configs/experiments/litefno_gray_scott_reaction_diffusion
   --set training.epochs=10 --set training.device=cuda
 ```
 
-Metrics are appended to the JSONL path in the config under
-`logging.metrics_path`.
+Metrics are appended to the JSONL path in the config under `logging.metrics_path`.
 
-Evaluate a checkpoint on a split (`train`, `valid`, or `test`; default `test`).
-Results are printed and appended to the metrics JSONL with `step: -1`:
+Evaluate a checkpoint on a split (`train`, `valid`, or `test`; default `test`). Evaluation reports describe the checkpoint provided; they do not establish that it implements LiteFNO.
 
 ```bash
 litefno test \
@@ -105,22 +98,18 @@ litefno test \
 
 ### Checkpoints
 
-When `training.checkpoint_every > 0` or `training.checkpoint_best_metric` is
-set, checkpoints go to `training.checkpoint_dir` (default
-`outputs/checkpoints/<dataset>/<model>/`):
+When `training.checkpoint_every > 0` or `training.checkpoint_best_metric` is set, checkpoints go to `training.checkpoint_dir` (default `outputs/checkpoints/<dataset>/<model>/`):
 
 - `last.pt`: overwritten every `checkpoint_every` epochs
-- `best.pt`: overwritten whenever `checkpoint_best_metric` (e.g. `valid_vrmse`)
-  improves
+- `best.pt`: overwritten whenever `checkpoint_best_metric` (e.g. `valid_vrmse`) improves
 
-Resume with `training.resume_from`, either in the config or via
-`--set training.resume_from=<path>`.
+Resume with `training.resume_from`, either in the config or via `--set training.resume_from=<path>`.
 
-### Run everything
+## Run experiments
 
 ```bash
 scripts/run_all.sh                       # both models, all 8 datasets
-scripts/run_all.sh --model litefno       # one model
+scripts/run_all.sh --model litefno       # currently trains the placeholder, not real LiteFNO
 scripts/run_all.sh --dataset gray_scott_reaction_diffusion
 ```
 
@@ -130,8 +119,7 @@ scripts/run_all.sh --dataset gray_scott_reaction_diffusion
 python -m pytest
 ```
 
-GitHub Actions runs the same command on pushes and pull requests via
-[.github/workflows/tests.yml](.github/workflows/tests.yml).
+GitHub Actions runs the same command on pushes and pull requests via [`.github/workflows/tests.yml`](.github/workflows/tests.yml).
 
 ## Documentation
 
