@@ -94,7 +94,7 @@ abstract: "This repository documents an in-progress, from-scratch attempt to rep
 bibliography: bibliography.bib
 
 # Article type
-type: Reproducibility attempt
+type: Reproduction
 
 # Domain
 domain: Scientific Machine Learning
