@@ -1,7 +1,7 @@
 # To be filled by the author(s) at the time of submission
 # -------------------------------------------------------
 
-title: "A Novel CNN Ablation Reveals Limited Fourier Inductive Bias in LiteFNO: A Reproducibility Study"
+title: "LiteFNO Reproducibility Attempt: Current Implementation Status and Validation Plan"
 
 # List of authors
 authors:
@@ -22,7 +22,7 @@ authors:
 
   - name: David J. Zhang
     orcid: 0009-0003-3037-5890
-    email: davidjzhang2011@gmail.om
+    email: davidjzhang2011@gmail.com
     affiliations: 1
 
   - name: Spursh Deshpande
@@ -68,7 +68,7 @@ keywords:
   - LiteFNO
   - Reproducibility
   - Neural Operator
-  - CNN ablation
+  - CNN baseline
   - Scientific Machine Learning
   - PDE surrogate
   - Gray-Scott
@@ -88,13 +88,13 @@ replication:
   - url: "https://ml4physicalsciences.github.io/2025/files/NeurIPS_ML4PS_2025_287.pdf"
 
 # Abstract
-abstract: "We study LiteFNO (Ahn et al., 2025), a lightweight Fourier Neural Operator for time-dependent PDEs, through a from-scratch reproducibility study and a novel ablation study. We reimplement the architecture (no public code was available) and introduce a parameter-matched low-rank CNN baseline absent from the original paper. Across three random seeds on the Gray-Scott dataset at 32×32 resolution, the CNN matches or outperforms LiteFNO on one-step VRMSE and autoregressive rollout, providing no consistent evidence for a Fourier inductive bias advantage at this scale. We confirm the 'compact beats dense' claim while documenting implementation ambiguities."
+abstract: "This repository documents an in-progress, from-scratch attempt to reproduce LiteFNO (Ahn et al., 2025), a lightweight Fourier Neural Operator for time-dependent partial differential equations. The FNO-S spectral baseline is implemented, but the class currently named LiteFNO is a low-rank CNN placeholder that lacks the paper's spectral convolution, CP low-rank factorization, and transduction stage. Metrics and checkpoints associated with this placeholder do not constitute a reproduction of LiteFNO and cannot support conclusions about its performance or Fourier inductive bias. The repository records these limitations, preprocessing deviations and fixes, and the work required for a valid architecture-level comparison. A faithful implementation and documented evaluation are needed before performance conclusions can be drawn."
 
 # Bibliography
 bibliography: bibliography.bib
 
 # Article type
-type: Reproduction
+type: Reproducibility attempt
 
 # Domain
 domain: Scientific Machine Learning
@@ -104,7 +104,7 @@ language: Python
 
 
 # To be filled by the author(s) after acceptance
-# -----------------------------------------------------------------------------
+# -------------------------------------------------------------------------
 
 # For example, the URL of the GitHub issue where review actually occured
 review:
